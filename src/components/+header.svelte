@@ -27,9 +27,11 @@
 <style>
     .header {
         width: 100%;
+        height: 5rem;
         background-color: #663366;
         padding: 2rem;
         display: flex;
+        align-items: center;
         justify-content: space-between;
         font-family: 'Montserrat', Arial, Helvetica, sans-serif;
         font-size: 1rem;
@@ -46,7 +48,7 @@
     }
 
     .logo {
-        height: 3rem;
+        height: 2rem;
         width: auto;
     }
 
