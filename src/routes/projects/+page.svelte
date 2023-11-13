@@ -1,27 +1,47 @@
-<script>
-    import Header from '../../components/+header.svelte'
-    import Card from '../../components/+card.svelte';
-
+<script lang="ts">
+    import Header from '../../components/header.svelte'
+    import ProjectCard from '../../components/project-card.svelte';
     import '@material/web/chips/filter-chip'
     import '@material/web/chips/_filter-chip.scss'
+    import {onMount} from "svelte";
+    import type {Category, Project} from "../../types";
+
+    let projects: Array<Project> = [];
+    let categories: Array<Category> = [];
+
+    onMount(async () => {
+        const response = await fetch("https://eu-central-1-shared-euc1-02.cdn.hygraph.com/content/closkv9m2uctv01t7gerrdt2q/master", {
+            method: "POST",
+            body: JSON.stringify({
+                query: "{projects{id slug title author{...on Author{id name title}}thumbnail{url altText}categories{name}}categories{name}}"
+            })
+        });
+
+        const json = await response.json();
+        const data = json.data
+
+        projects = data.projects
+        categories = data.categories
+    });
 </script>
 
 <div>
-    <Header />
+    <Header/>
     <div class="projects-page">
         <h1 class="title">Our Projects</h1>
         <p class="subtitle">A handful of the projects made by our Delta students.</p>
     </div>
     <div class="project-filters">
         <md-chip-set aria-labelledby="dates-label">
-            <md-filter-chip label="Digital media" aria-label="Digital media"></md-filter-chip>
-            <md-filter-chip label="Research" aria-label="Research"></md-filter-chip>
-            <md-filter-chip label="Data science" aria-label="Data science"></md-filter-chip>
-            <md-filter-chip label="Hardware" aria-label="Hardware"></md-filter-chip>
+            {#each categories as category}
+                <md-filter-chip class="project-filters-chip" label="{category.name}" aria-label="{category.name}"/>
+            {/each}
         </md-chip-set>
     </div>
     <section class="projects-overview">
-        <Card />
+        {#each projects as project}
+            <ProjectCard project="{project}"/>
+        {/each}
     </section>
 </div>
 
@@ -68,6 +88,10 @@
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .project-filters-chip {
+        margin: 0 .25rem;
     }
 
     .projects-overview {
